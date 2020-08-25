@@ -4,6 +4,8 @@
  * 1. Arduino establishes contact
  * 2. Arduino sends data if an OK signal is recieved
  * 3. Arduino checks if data reaches the terminal
+ * 
+ * Arduino must be powered up before ESP01 !!
  */
 #include<SoftwareSerial.h>
 
@@ -12,6 +14,7 @@ size_t my_strlen(const char);
 // fucntion prototypes
 boolean establishContact();
 boolean tx_data(char*);
+void ESPFlush();
 size_t my_strlen(const char*);
 
 
@@ -21,6 +24,9 @@ void setup() {
     pinMode(2, OUTPUT);    // status LED 
     Serial.begin(115200); // link to esp01
     s.begin(9600);
+    Serial.println("Wait for ESP 01 to power up");
+    while(!s.available()){}
+    ESPFlush();  // clear debug msg of ESP 01 from
 }
 
 void loop() {
@@ -114,7 +120,7 @@ boolean tx_data(char* str) {
     int x = s.readBytes(txt, len);
     txt[len] = '\0';                   // terminate string my NULL char
     Serial.println(txt);
-    if (txt == "OK") {
+    if ((String)txt == "OK") {
         return true;
     }
     else {
@@ -122,6 +128,16 @@ boolean tx_data(char* str) {
     }
 }
 
+/*
+ * Clear serial receive buffer 
+ */
+void ESPFlush(){String boot_msg;
+  s.setTimeout(100);
+  while(s.available()) {
+    boot_msg = s.readString();
+  }
+  Serial.println(boot_msg);
+}    
 /*
  * ///////////// my_strlen ///////////////////////
  * Desciption: return the length of the char array

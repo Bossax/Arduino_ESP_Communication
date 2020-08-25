@@ -4,18 +4,10 @@
 
 void setup() {
   Serial.begin(9600); 
-  pinMode(2, OUTPUT);
-
-  digitalWrite(2, HIGH);   
-  delay(500);
-  digitalWrite(2, LOW); 
-  delay(500);  
-  
 }
 
 void loop(){char* data;  int len;
-  while(true){
-    digitalWrite(2, HIGH);  
+  while(true){ 
     if(Serial.available()){
       byte len_buffer[1];
       Serial.readBytes(len_buffer,1);
@@ -27,10 +19,9 @@ void loop(){char* data;  int len;
       break;
     }
     delay(50);
-    digitalWrite(2, LOW);
-    delay(200);
+   
   }
-   digitalWrite(2, LOW); 
+   
     // echo
   while(!Serial.availableForWrite()){}
   Serial.write(len);

@@ -9,7 +9,7 @@ SoftwareSerial s(9,10); //rx tx
 void setup() {
   pinMode(2,OUTPUT); //green
   pinMode(3,OUTPUT); //red
-  Serial.begin(115200); // link to esp01
+  Serial.begin(115200); 
   s.begin(9600);
   digitalWrite(2, HIGH); 
     delay(500);

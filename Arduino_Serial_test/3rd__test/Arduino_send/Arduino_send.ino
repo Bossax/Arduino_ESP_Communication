@@ -4,28 +4,29 @@
 #include<SoftwareSerial.h>
 
 size_t my_strlen(const char);
+void ESPFlush();
 
 SoftwareSerial s(9,10); //rx tx
 void setup() {
   pinMode(2,OUTPUT);
-
-  Serial.begin(115200); // link to esp01
-  s.begin(9600);
+  Serial.begin(115200); 
+  s.begin(9600); // link to esp01
+  Serial.println("Wait for esp to boot...");
+  while(!s.available()){}
+  ESPFlush();
+  Serial.println("Ready...");
 }
 
 void loop() {
   
   if(!s.availableForWrite()){
      Serial.println("Sending...");
-     digitalWrite(2,HIGH);
-     delay(200);
-     digitalWrite(2,LOW);
-     
    // send string size
-    char *text = "Boris";
+    char *text = "AA";
     s.write((int) my_strlen(text));
     s.write(text);
-    
+   Serial.println(text);
+
   Serial.println("Recieving...");
   while(!s.available()){}
    //recieve echo
@@ -40,11 +41,36 @@ void loop() {
   
    Serial.println(txt);
    
-    delay(5000);
+  // debugging LED status
+   if((String) txt == (String) text){
+    digitalWrite(2,HIGH);
+    delay(1000);
+    digitalWrite(2,LOW);
+   }else{
+    digitalWrite(2,HIGH);
+    delay(200);
+    digitalWrite(2,LOW);
+    delay(200);
+    digitalWrite(2,HIGH);
+    delay(200);
+    digitalWrite(2,LOW);
+    delay(200);
+    digitalWrite(2,HIGH);
+    delay(200);
+    digitalWrite(2,LOW);
+   }
+    delay(3000);
   }
 }
 
-
+void ESPFlush(){String boot_msg;
+  s.setTimeout(100);
+  while(s.available()) {
+    boot_msg = s.readString();
+  }
+  Serial.println(boot_msg);
+}    
+  
 size_t my_strlen(const char *str)
 {
   size_t i;

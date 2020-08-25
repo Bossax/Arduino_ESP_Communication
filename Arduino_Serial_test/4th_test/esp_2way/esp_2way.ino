@@ -11,12 +11,9 @@
  char*  get_data();
  void buffer_clear();
  void ack_msg(boolean);
- void blink_LED();
 
 void setup() {
   Serial.begin(9600); 
-  pinMode(2, OUTPUT); // status LED
-  
 }
 
 void loop(){
@@ -24,12 +21,11 @@ void loop(){
   // 1. waiting for contact request
    contactRequest();
 
-  digitalWrite(2,LOW);
   // 2. recieving data
   char* data = get_data();
-  digitalWrite(2,HIGH);
+
   // 3. echo check message
-  if(data == "AA"){
+  if((String)data == "AA"){
     ack_msg(true);
   }else{
     ack_msg(false);
@@ -38,7 +34,6 @@ void loop(){
 
 void contactRequest(){boolean contact_est = false;
   while(!contact_est){
-    blink_LED();
     if(Serial.available()){
       int request = Serial.read();
       delay(5);
@@ -46,7 +41,7 @@ void contactRequest(){boolean contact_est = false;
         buffer_clear(); // clear recieve buffer
         contact_est = true;
         Serial.write(6);  // acknowledge
-        digitalWrite(2,LOW);
+        
         return;
       }
    }
@@ -54,7 +49,7 @@ void contactRequest(){boolean contact_est = false;
 }
 
 char* get_data(){char* str;  int len;
-    blink_LED();
+   
     while(!Serial.available()){}
     byte len_buffer[1];
     Serial.readBytes(len_buffer,1);
@@ -73,17 +68,10 @@ void ack_msg(boolean echo){
   }else{
     Serial.write(2);
     Serial.write("XX");
-  }
   return;
-  
+  }
 }
 
-
-void blink_LED(){
-  digitalWrite(2,HIGH);
-  delay(100);
-  digitalWrite(2,LOW);
-}
 
 void buffer_clear(){
   while(Serial.available()){
